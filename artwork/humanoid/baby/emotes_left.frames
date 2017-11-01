@@ -1,0 +1,14 @@
+{
+  "frameGrid" : {
+    "size" : [43, 43],
+    "dimensions" : [2, 1],
+    "names" : [
+      [ "happy.1", "happy.2" ]
+    ]
+  },
+  "aliases" : {
+    "happy.3" : "happy.2",
+    "happy.4" : "happy.2",
+    "happy.5" : "happy.2"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "animatedParts" : {
+    "stateTypes" : {
+      "normal" : {
+        "default" : "idle",
+        "states" : {
+          "none" : { },
+          "idle" : {
+            "frames" : 5,
+            "cycle" : 1.0,
+            "mode" : "loop",
+            "properties" : {},
+            "frameProperties" : {}
+          }
+        }
+      }
+    },
+
+    "parts" : {
+      "base" : {
+        "properties" : {
+          "centered" : true,
+          "transformationGroups" : [ "body" ],
+          "zLevel" : 0
+        },
+        "partStates" : {
+          "normal" : {
+            "none" : { },
+            "idle" : {
+              "properties" : {
+                "image" : "/artwork/humanoid/baby/human_<facingDirection>.png:default.<frame>"
+              }
+            }
+          }
+        }
+      },
+      
+      "emote" : {
+        "properties" : {
+          "centered" : true,
+          "transformationGroups" : [ "body" ],
+          "zLevel" : 1
+        },
+        "partStates" : {
+          "normal" : {
+            "none" : { },
+            "idle" : {
+              "properties" : {
+                "image" : "/artwork/humanoid/baby/emotes_<facingDirection>.png:happy.<frame>"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  
+  "transformationGroups" : {
+    "body" : { "interpolated" : false }
+  },
+  
+  "particleEmitters" : {
+    "emotehappy" : {
+      "emissionRate" : 1,
+      "particles" : [
+        {
+          "particle" : {
+            "type" : "animated",
+            "animation" : "/animations/emotes/happy.animation",
+            "position" : [0, 0],
+            "finalVelocity" : [0, 0],
+            "initialVelocity" : [0, 0],
+            "destructionTime" : 0.2,
+            "destructionAction" : "shrink",
+            "layer" : "front",
+            "timeToLive" : 0.8,
+            "flippable" : false
+          }
+        }
+      ]
+    }
+  }
+}

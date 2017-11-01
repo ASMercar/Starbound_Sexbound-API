@@ -1,0 +1,12 @@
+{
+  "name" : "carryingbabyonback",
+  "blockingStat" : "carryingbabyonback",
+  
+  "defaultDuration" : 1.0,
+
+  "scripts" : [
+    "carryingbabyonback.lua"
+  ]
+  
+  //"animationConfig" : "carryingbabyonback.animation"
+}

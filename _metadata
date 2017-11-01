@@ -1,0 +1,10 @@
+ {
+ "name" : "SexboundAPI",
+ "version" : "1.15.0",
+ "description" : "Adds the Sexbound API.",
+ "friendlyName" : "SexboundAPI",
+ "priority" : -1,
+ "link" : "http://www.loverslab.com/files/file/4337-starbound-sexbound-api/",
+ "steamContentId" : "",
+ "author" : "Loxodon"
+ }
