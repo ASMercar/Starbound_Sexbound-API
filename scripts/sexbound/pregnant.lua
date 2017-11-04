@@ -4,27 +4,28 @@ pregnant = {}
 
 require "/scripts/sexbound/helper.lua"
 
+--- Initializes this module.
 function pregnant.init()
   if not self.sexboundConfig then
     self.sexboundConfig = root.assetJson("/sexbound.config")
   end
   
-  -- Clear the pregnancy when module is disabled.
+  -- Clear the pregnancy when this module is disabled.
   if not pregnant.isEnabled() and pregnant.isPregnant() then
     pregnant.clear()
   end
 end
 
---- Returns the enabled status of the pregnant module.
--- @return boolean enabled
-function pregnant.isEnabled()
-  return self.sexboundConfig.pregnant.enabled
-end
-
---- Returns the pregnant status this entity
--- @return boolean value
-pregnant.isPregnant = function()
-  return storage.pregnant and storage.pregnant.isPregnant
+--- Updates a current pregnancy.
+-- @param[opt] callback
+function pregnant.update(callback)
+  if pregnant.isPregnant() then
+    pregnant.tryToGiveBirth(function()      
+      pregnant.giveBirth(callback)
+      
+      pregnant.clear()
+    end)
+  end
 end
 
 --- Private: Returns a random birth date and day count
@@ -76,20 +77,6 @@ end
 -- @return string as species name
 local function createSpecies(target)
   return target.identity.species
-end
-
---- Returns the name of the partner.
--- @param target the specified actor {data}
-function pregnant.findPartnerName(target)
-  local name = nil
-  
-  helper.each(actor.data.list, function(k,v)
-    if target.id ~= v.id then name = v.identity.name end
-  end)
-  
-  if (name) then return name end
-  
-  return "<Unknown Name>"
 end
 
 --- Private: Causes the specified entity to become pregnant.
@@ -167,49 +154,35 @@ local function becomePregnant(target)
   return true
 end
 
---- Attempt to make the entity become pregnant.
--- @param[opt] callback executes inputted function if the entity becomes pregnant.
--- @return Success: returns the callback function's return value or true
--- @return Failure: returns false
-function pregnant.tryBecomePregnant(callback)
-  if not pregnant.isEnabled() then return false end
-
-  -- Check the pregnancy chance while in current position
-  local possiblePregnancy = position.selectedSexPosition().possiblePregnancy
-  
-  local isCompatible = true
-
-  -- Matching gender is incompatible by default
-  if actor.data.list[1].gender == actor.data.list[2].gender then
-    isCompatible = false
-  end
-  
-  if isCompatible and possiblePregnancy ~= nil then
-    helper.each(actor.data.list, function(k, v)
-      if possiblePregnancy[k] and v.gender == "female" then
-        if v.isSexNode and storage.pregnant and storage.pregnant.isPregnant then return false end
-        if v.storage and v.storage.pregnant and v.storage.pregnant.isPregnant then return false end
-        
-        -- Generate random chance of becoming pregnant
-        local chance = helper.randomInRange({0.0, 1.0})
-        
-        -- Compare random chance with fertility. Success on chance is less than or equal to fertility.
-        if chance <= tonumber(self.sexboundConfig.pregnant.fertility) and becomePregnant(v) then 
-          if callback ~= nil then
-            return callback()
-          end
-
-          return true -- SUCCESS
-        end
-      end
-    end)
-  end
-
-  return false -- FAILURE
-end
-
+--- Clears the stored pregnancy.
 function pregnant.clear()
   storage.pregnant = {isPregnant = false}
+end
+
+--- Returns the name of the partner.
+-- @param target the specified actor {data}
+function pregnant.findPartnerName(target)
+  local name = nil
+  
+  helper.each(actor.data.list, function(k,v)
+    if target.id ~= v.id then name = v.identity.name end
+  end)
+  
+  if (name) then return name end
+  
+  return "<Unknown Name>"
+end
+
+--- Returns the enabled status of the pregnant module.
+-- @return boolean enabled
+pregnant.isEnabled = function()
+  return self.sexboundConfig.pregnant.enabled
+end
+
+--- Returns the pregnant status this entity
+-- @return boolean value
+pregnant.isPregnant = function()
+  return storage.pregnant and storage.pregnant.isPregnant
 end
 
 --- Causes the current entity to give birth.
@@ -238,17 +211,56 @@ function pregnant.giveBirth(callback)
   world.spawnNpc(entity.position(), lpregnant.species, lpregnant.npcType, mcontroller.facingDirection(), nil, parameters) -- level 1
 end
 
+--- Attempt to make the entity become pregnant.
+-- @param[opt] callback executes inputted function if the entity becomes pregnant.
+-- @return Success: returns the callback function's return value or true
+-- @return Failure: returns false
+function pregnant.tryBecomePregnant(callback)
+  if not pregnant.isEnabled() then return false end
+
+  -- Check the pregnancy chance while in current position
+  local possiblePregnancy = position.selectedSexPosition().possiblePregnancy
+  
+  local isCompatible = true
+
+  -- Matching gender is incompatible by default
+  if actor.data.list[1].gender == actor.data.list[2].gender then
+    isCompatible = false
+  end
+  
+  if isCompatible and possiblePregnancy ~= nil then
+    helper.each(actor.data.list, function(k, v)
+      if possiblePregnancy[k] and v.gender == "female" then
+        if v.isSexNode and storage.pregnant and storage.pregnant.isPregnant then return false end
+        if v.storage and v.storage.pregnant and v.storage.pregnant.isPregnant then return false end
+        
+        -- Generate random chance of becoming pregnant
+        local chance = helper.randomInRange({0.0, 1.0})
+
+        -- Compare random chance with fertility. Success on chance is less than or equal to fertility.
+        if chance <= tonumber(self.sexboundConfig.pregnant.fertility) and becomePregnant(v) then 
+          if callback ~= nil then
+            return callback()
+          end
+
+          return true -- SUCCESS
+        end
+      end
+    end)
+  end
+
+  return false -- FAILURE
+end
+
 --- Attempt to make the entity give birth.
 -- @param[opt] callback executes inputted function if the entity gives birth.
 -- @return boolean value
 function pregnant.tryToGiveBirth(callback)
-  local lpregnant = storage.pregnant
-  
-  local birthTime = lpregnant.birthDate + lpregnant.birthTime
+  local birthTime = storage.pregnant.birthDate + storage.pregnant.birthTime
   local worldTime = world.day() + world.timeOfDay()
   
   if (worldTime >= birthTime) then
-    if (callback ~= nil) then      
+    if (callback) then      
       return callback()
     end
     
@@ -256,16 +268,4 @@ function pregnant.tryToGiveBirth(callback)
   end
   
   return false
-end
-
---- Updates a current pregnancy.
--- @param[opt] callback
-function pregnant.update(callback)
-  if pregnant.isPregnant() then
-    pregnant.tryToGiveBirth(function()      
-      pregnant.giveBirth(callback)
-      
-      pregnant.clear()
-    end)
-  end
 end
