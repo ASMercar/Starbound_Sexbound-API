@@ -23,7 +23,7 @@ require "/scripts/sexbound/helper.lua"
 
 --- Initializes the sex module.
 function sex.init(callback)
-  sex.setupHandlers()
+  sex.setupMessageHandlers()
   
   -- Load configuration from mod
   self.sexboundConfig = helper.mergeTable(root.assetJson("/sexbound.config"), config.getParameter("sexboundConfig"))
@@ -193,7 +193,7 @@ sex.setTimer = function(name, value)
   return self.timers[name]
 end
 
-function sex.setupHandlers()
+function sex.setupMessageHandlers()
   message.setHandler("store-player-storage", function(_, _, args)
     if (actor.hasPlayer()) then
       helper.each(actor.data.list, function(k,v)
@@ -303,23 +303,15 @@ end
 
 ---Try to Cum.
 function sex.tryToCum(callback)
-  if (self.climaxPoints.current >= self.climaxPoints.threshold) then
-    -- Execute your cum logic as a callback
-    if (type(callback) == "function") then
-      callback()
+  if self.climaxPoints.current >= self.climaxPoints.threshold then
+    -- Execute custom logic in callback function
+    if type(callback) == "function" then
+      return callback()
     end
-    
-    -- All NPC-to-NPC interactions will automatically climax
-    if (actor.isEnabled() and not actor.hasPlayer()) then
+
+    if self.climaxPoints.autoClimax or (actor.isEnabled() and not actor.hasPlayer()) then
       self.climaxPoints.current = 0
       self.isCumming = true
-      
-      return true
-    end
-    
-    -- Automatically climax in the case that it is set to true
-    if (self.climaxPoints.autoClimax or self.isCumming) then
-      self.climaxPoints.current = 0
       
       return true
     end
