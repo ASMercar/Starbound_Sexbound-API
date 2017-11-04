@@ -1,3 +1,4 @@
+- Pregnancy is cleared for all characters when pregnant module is disabled.
 1.16.1: Fixed fertility value bug.
 - Fixed trimesterCount value bug.
 1.16.0: Added ability for players to customize their own Sexbound API experience.

@@ -6,7 +6,12 @@ require "/scripts/sexbound/helper.lua"
 
 function pregnant.init()
   if not self.sexboundConfig then
-    self.sexboundConfig = root.assetJson("/scripts/sexbound/default.config")
+    self.sexboundConfig = root.assetJson("/sexbound.config")
+  end
+  
+  -- Clear the pregnancy when module is disabled.
+  if not pregnant.isEnabled() and pregnant.isPregnant() then
+    pregnant.clear()
   end
 end
 
@@ -33,7 +38,7 @@ local function createBirthday()
   
   -- Set trimesterCount if it was specified in the config
   if (self.sexboundConfig.pregnant.trimesterCount ~= nil) then
-    trimesterCount = self.sexboundConfig.pregnant.trimesterCount
+    trimesterCount = tonumber(self.sexboundConfig.pregnant.trimesterCount)
   end
   
   -- Set trimesterLength if it was specified in the config
@@ -60,9 +65,10 @@ end
 --- Private: Returns a suitable NPC type for the baby
 -- @return string as NPC type.
 local function createNPCType(target)
-  if target.type == "npc" then
+  if target.type ~= "player" then
     return target.identity.npcType
   end
+  
   return "villager"
 end
 
@@ -166,6 +172,8 @@ end
 -- @return Success: returns the callback function's return value or true
 -- @return Failure: returns false
 function pregnant.tryBecomePregnant(callback)
+  if not pregnant.isEnabled() then return false end
+
   -- Check the pregnancy chance while in current position
   local possiblePregnancy = position.selectedSexPosition().possiblePregnancy
   
@@ -186,7 +194,7 @@ function pregnant.tryBecomePregnant(callback)
         local chance = helper.randomInRange({0.0, 1.0})
         
         -- Compare random chance with fertility. Success on chance is less than or equal to fertility.
-        if chance <= self.sexboundConfig.pregnant.fertility and becomePregnant(v) then 
+        if chance <= tonumber(self.sexboundConfig.pregnant.fertility) and becomePregnant(v) then 
           if callback ~= nil then
             return callback()
           end
