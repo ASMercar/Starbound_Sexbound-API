@@ -59,7 +59,7 @@ function sex.init(callback)
 
   self.animationRate = 1
   
-  if (callback ~= nil) then
+  if (type(callback) == "function") then
     callback()
   end
 end
@@ -78,9 +78,9 @@ function sex.loop(dt, callback)
   
   -- Update the curent state machine state
   self.sexStates.update(dt)
-    
+  
   -- Execute your logic as a callback within this sex loop
-  if (callback ~= nil) then
+  if (type(callback) == "function") then
     callback()
   end
 end
@@ -109,7 +109,7 @@ sex.tryToSetUniqueId = function(uniqueId, callback)
   
   if (self.findUniqueId:finished()) then
     if not self.findUniqueId:result() then
-      if (callback ~= nil) then callback(uniqueId) end
+      if (type(callback) == "function") then callback(uniqueId) end
     end
     
     self.findUniqueId = nil
@@ -305,7 +305,7 @@ end
 function sex.tryToCum(callback)
   if (self.climaxPoints.current >= self.climaxPoints.threshold) then
     -- Execute your cum logic as a callback
-    if (callback ~= nil) then
+    if (type(callback) == "function") then
       callback()
     end
     
@@ -338,7 +338,7 @@ function sex.tryToTalk(callback)
     self.cooldowns.talk = helper.randomInRange(self.sexboundConfig.sex.talkCooldown)
   
     -- Execute your talk logic as a callback
-    if (callback ~= nil) then
+    if (type(callback) == "function") then
       callback()
     end
 
@@ -358,7 +358,7 @@ function sex.tryToEmote(callback)
     self.cooldowns.emote = helper.randomInRange(self.sexboundConfig.sex.emoteCooldown)
     
     -- Execute your emote logic as a callback
-    if (callback ~= nil) then
+    if (type(callback) == "function") then
       callback()
     end
     
@@ -376,7 +376,7 @@ function sex.tryToMoan(callback)
     self.cooldowns.moan  = helper.randomInRange(self.sexboundConfig.sex.moanCooldown)
     
     -- Execute your moan logic as a callback
-    if (callback ~= nil) then
+    if (type(callback) == "function") then
       callback()
     end
     
