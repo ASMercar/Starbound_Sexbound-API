@@ -122,7 +122,18 @@ actor.resetActor = function(args, actorNumber)
     pregnantConfig = args.storage.pregnant
   end
   
-  if pregnantConfig and pregnantConfig.isPregnant then
+  local showPregnant = false
+  
+  -- Show pregnant player
+  if args.type ~= "player" and self.sexboundConfig.pregnant.showPregnantOther then
+    showPregnant = true
+  else
+    if self.sexboundConfig.pregnant.showPregnantPlayer then
+      showPregnant = true
+    end
+  end
+  
+  if showPregnant and pregnantConfig and pregnantConfig.isPregnant then
     parts.body = "/artwork/humanoid/" .. role .. "/" .. species  .. "/body_" .. gender .. "_pregnant.png:" .. positionName
   else
     parts.body = "/artwork/humanoid/" .. role .. "/" .. species  .. "/body_" .. gender .. ".png:" .. positionName

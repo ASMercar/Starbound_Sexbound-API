@@ -1,3 +1,7 @@
+1.16.1: Fixed fertility value bug.
+- Fixed trimesterCount value bug.
+1.16.0: Added ability for players to customize their own Sexbound API experience.
+- Sexbound_Custom is now packaged in the archive.
 1.15.0: Changed character heads to move during the animations.
 - Changed sprite sheet art for cowgirl position.
 - Changed actor 1 and actor 2 to both emote.

@@ -146,16 +146,6 @@
       "enabled" : false
     },
     
-    "pregnant" : {
-      "enabled" : true,
-      
-      "fertility" : 0.6,
-      
-      "trimesterCount" : 1,
-    
-      "trimesterLength" : [3, 5]
-    },
-    
     "sex" : {
       "autoClimax"    : false,
       

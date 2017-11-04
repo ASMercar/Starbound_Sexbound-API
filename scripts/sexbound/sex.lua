@@ -26,7 +26,7 @@ function sex.init(callback)
   sex.setupHandlers()
   
   -- Load configuration from mod
-  self.sexboundConfig = helper.mergeTable(root.assetJson("/scripts/sexbound/default.config"), config.getParameter("sexboundConfig"))
+  self.sexboundConfig = helper.mergeTable(root.assetJson("/sexbound.config"), config.getParameter("sexboundConfig"))
   
   -- Predefined sex states
   self.sexStates = stateMachine.create({ "idleState", "sexState", "climaxState", "exitState" })
